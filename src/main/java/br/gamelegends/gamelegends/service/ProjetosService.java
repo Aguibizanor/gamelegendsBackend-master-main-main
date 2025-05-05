@@ -18,7 +18,7 @@ public class ProjetosService {
 		}
 		
 
-		public List<Projetos> fintAll () {
+		public List<Projetos> findAll () {
 			return projetosRepository.findAll();
 		}
 		

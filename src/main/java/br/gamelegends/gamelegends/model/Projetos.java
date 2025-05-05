@@ -15,11 +15,8 @@ public class Projetos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
-
-
-    private byte image;
-    private String nomeProjeto;
+    private byte[] foto;
+	private String nomeProjeto;
     private String descricao;
     private String genero;
     private String tecnologias;
@@ -31,11 +28,11 @@ public class Projetos {
 	public void setDataInicio(String dataInicio) {
 		this.dataInicio = dataInicio;
 	}
-	public byte getImage() {
-		return image;
+	public byte[] getFoto() {
+		return foto;
 	}
-	public void setImage(byte image) {
-		this.image = image;
+	public void setFoto(byte[] foto) {
+		this.foto = foto;
 	}
 	public String getNomeProjeto() {
 		return nomeProjeto;
@@ -73,6 +70,20 @@ public class Projetos {
     }
     public void setStatusProjeto(String statusProjeto) {
         this.statusProjeto = statusProjeto;
+    }
+    
+ // Implementação do método toString()
+    @Override
+    public String toString() {
+        return "Projetos{" +
+                "id=" + id +
+                ", nomeProjeto='" + nomeProjeto + '\'' +
+                ", descricao='" + descricao + '\'' +
+                ", genero='" + genero + '\'' +
+                ", tecnologias='" + tecnologias + '\'' +
+                ", dataInicio='" + dataInicio + '\'' +
+                ", foto=" + (foto != null ? "tamanho: " + foto.length : "null") +
+                '}';
     }
 }
 

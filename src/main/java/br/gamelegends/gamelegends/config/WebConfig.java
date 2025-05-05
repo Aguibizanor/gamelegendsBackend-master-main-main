@@ -7,7 +7,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Override
+   /*
+	@Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Habilita CORS para todas as rotas
                 .allowedOrigins("http://localhost:5173") // Permite requisições de todas as rotas do frontend
@@ -15,4 +16,11 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*") // Permite todos os cabeçalhos
                 .allowCredentials(true); // Permite envio de cookies ou credenciais
     }
+    */
+	
+	public void addCorsMappings(CorsRegistry registry) {
+		registry.addMapping("/**")
+				.allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT")
+				.allowCredentials(false).maxAge(3600);
+	}
 }

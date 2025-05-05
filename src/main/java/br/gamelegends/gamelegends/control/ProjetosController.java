@@ -29,31 +29,35 @@ public class ProjetosController {
 	@GetMapping
 	public ResponseEntity<List<Projetos>> getAllProjetos() {
 		return ResponseEntity.status(HttpStatus.OK)
-				.body(projetosService.fintAll());
+				.body(projetosService.findAll());
 	}
 	
 	// POST: Salva um novo projeto
 	@PostMapping
-	public ResponseEntity<Object> saveProjetos(@RequestBody Projetos projetos) { // Recebe o JSON do frontend
-		// Validação básica (se necessário)
-		if (projetos.getNomeProjeto() == null || projetos.getNomeProjeto().isEmpty()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O nome do projeto é obrigatório.");
-		}
-		if (projetos.getDescricao() == null || projetos.getDescricao().isEmpty()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A descrição do projeto é obrigatória.");
-		}
-		if (projetos.getDataInicio() == null || projetos.getDataInicio().isEmpty()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A data de início é obrigatória.");
-		}
-		if (projetos.getTecnologias() == null || projetos.getTecnologias().isEmpty()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("As tecnologias são obrigatórias.");
-		}
-		if (projetos.getGenero() == null || projetos.getGenero().isEmpty()) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O gênero do projeto é obrigatório.");
-		}
+	public ResponseEntity<Object> saveProjetos(@RequestBody Projetos projetos) {
+	    // Validação de campos obrigatórios
+	    if (projetos.getNomeProjeto() == null || projetos.getNomeProjeto().isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O nome do projeto é obrigatório.");
+	    }
+	    if (projetos.getDescricao() == null || projetos.getDescricao().isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A descrição do projeto é obrigatória.");
+	    }
+	    if (projetos.getDataInicio() == null || projetos.getDataInicio().isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A data de início é obrigatória.");
+	    }
+	    if (projetos.getTecnologias() == null || projetos.getTecnologias().isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("As tecnologias são obrigatórias.");
+	    }
+	    if (projetos.getGenero() == null || projetos.getGenero().isEmpty()) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O gênero do projeto é obrigatório.");
+	    }
+	    if (projetos.getFoto() == null || projetos.getFoto().length == 0) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A imagem do projeto é obrigatória.");
+	    }
 
-		// Salva o projeto usando o serviço
-		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(projetosService.save(projetos));
+	    // Salva o projeto no banco de dados
+	    return ResponseEntity.status(HttpStatus.CREATED)
+	            .body(projetosService.save(projetos));
 	}
+	
 }
