@@ -51,9 +51,11 @@ public class ProjetosController {
 	    if (projetos.getGenero() == null || projetos.getGenero().isEmpty()) {
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("O gênero do projeto é obrigatório.");
 	    }
+	    /*
 	    if (projetos.getFoto() == null || projetos.getFoto().length == 0) {
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("A imagem do projeto é obrigatória.");
 	    }
+	    */
 
 	    // Salva o projeto no banco de dados
 	    return ResponseEntity.status(HttpStatus.CREATED)
