@@ -1,22 +1,27 @@
 package br.gamelegends.gamelegends.control;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody; // Para receber o corpo da requisição
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import br.gamelegends.gamelegends.model.Projetos;
-import br.gamelegends.gamelegends.service.ProjetosService;
 import br.gamelegends.gamelegends.rest.response.MessageResponse;
+import br.gamelegends.gamelegends.service.ProjetosService;
+import br.gamelegends.gamelegends.model.ProjetosRepository;
 
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -24,15 +29,31 @@ import br.gamelegends.gamelegends.rest.response.MessageResponse;
 public class ProjetosController {
 
     final ProjetosService projetosService;
+    final ProjetosRepository projetosRepository;
 
-    public ProjetosController(ProjetosService _projetosService) {
+    public ProjetosController(ProjetosService _projetosService, ProjetosRepository _projetosRepository) {
         this.projetosService = _projetosService;
+        this.projetosRepository = _projetosRepository;
     }
 
     // GET: Retorna todos os projetos
     @GetMapping
     public ResponseEntity<List<Projetos>> getAllProjetos() {
         return ResponseEntity.status(HttpStatus.OK).body(projetosService.findAll());
+    }
+
+    // GET: Retorna a imagem do projeto por ID
+    @GetMapping("/{id}/imagem")
+    public ResponseEntity<byte[]> getImagemProjeto(@PathVariable Long id) {
+        Optional<Projetos> projetoOpt = projetosRepository.findById(id);
+        if (projetoOpt.isPresent() && projetoOpt.get().getFoto() != null) {
+            byte[] imagem = projetoOpt.get().getFoto();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG); // ou ajuste para IMAGE_PNG se necessário
+            return new ResponseEntity<>(imagem, headers, HttpStatus.OK);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // POST: Cria um projeto sem foto
@@ -47,12 +68,17 @@ public class ProjetosController {
     }
 
     // POST: Cria um projeto com foto
-    @PostMapping("createComFoto")
+    @PostMapping("/createComFoto")
     public ResponseEntity<?> createComFoto(
             @RequestParam(value = "file", required = false) MultipartFile file,
             @ModelAttribute Projetos projetos) {
-        projetosService.createComFoto(file, projetos);
-        return ResponseEntity.ok().body(new MessageResponse("Produto cadastrado com sucesso!"));
+
+        try {
+            projetosService.createComFoto(file, projetos);
+            return ResponseEntity.ok().body(new MessageResponse("Produto cadastrado com sucesso!"));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Erro ao cadastrar projeto: " + e.getMessage()));
+        }
     }
 
     // POST: Salva um novo projeto com validações

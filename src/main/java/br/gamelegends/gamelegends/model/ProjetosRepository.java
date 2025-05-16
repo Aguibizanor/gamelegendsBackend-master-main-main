@@ -5,5 +5,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProjetosRepository extends JpaRepository<Projetos, Long> {
-
+	// Método para verificar se existe um projeto com o nome informado
+    boolean existsByNomeProjeto(String nomeProjeto);
 }

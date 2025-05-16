@@ -15,27 +15,32 @@ public class Projetos {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    /*private byte[] foto; */
+    private byte[] foto; 
 	private String nomeProjeto;
     private String descricao;
     private String genero;
     private String tecnologias;
     private String dataInicio;
+    private String imagemUrl;
 
+	public String getImagemUrl() {
+		return imagemUrl;
+	}
+	public void setImagemUrl(String imagemUrl) {
+		this.imagemUrl = imagemUrl;
+	}
 	public String getDataInicio() {
 		return dataInicio;
 	}
 	public void setDataInicio(String dataInicio) {
 		this.dataInicio = dataInicio;
 	}
-	/*
 	public byte[] getFoto() {
 		return foto;
 	}
 	public void setFoto(byte[] foto) {
 		this.foto = foto;
 	}
-	*/
 	public String getNomeProjeto() {
 		return nomeProjeto;
 	}
