@@ -9,12 +9,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody; // Para receber o corpo da requisição
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,57 +30,66 @@ public class ProjetosController {
     final ProjetosService projetosService;
     final ProjetosRepository projetosRepository;
 
-    public ProjetosController(ProjetosService _projetosService, ProjetosRepository _projetosRepository) {
-        this.projetosService = _projetosService;
-        this.projetosRepository = _projetosRepository;
+    public ProjetosController(ProjetosService projetosService, ProjetosRepository projetosRepository) {
+        this.projetosService = projetosService;
+        this.projetosRepository = projetosRepository;
     }
 
     // GET: Retorna todos os projetos
     @GetMapping
     public ResponseEntity<List<Projetos>> getAllProjetos() {
-        return ResponseEntity.status(HttpStatus.OK).body(projetosService.findAll());
+        return ResponseEntity.ok(projetosService.findAll());
     }
 
-    // GET: Retorna a imagem do projeto por ID
-    @GetMapping("/{id}/imagem")
-    public ResponseEntity<byte[]> getImagemProjeto(@PathVariable Long id) {
+    // GET: Retorna o binário da foto do projeto por ID (byte[])
+    @GetMapping("/{id}/foto")
+    public ResponseEntity<byte[]> getFotoProjeto(@PathVariable Long id) {
         Optional<Projetos> projetoOpt = projetosRepository.findById(id);
         if (projetoOpt.isPresent() && projetoOpt.get().getFoto() != null) {
             byte[] imagem = projetoOpt.get().getFoto();
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_JPEG); // ou ajuste para IMAGE_PNG se necessário
+            headers.setContentType(MediaType.IMAGE_JPEG); // ou IMAGE_PNG se for o caso
             return new ResponseEntity<>(imagem, headers, HttpStatus.OK);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    // POST: Cria um projeto sem foto
-    @PostMapping("createSemFoto")
-    public ResponseEntity<?> createSemFoto(@ModelAttribute Projetos projetos) {
-        if (projetosService.existsByName(projetos.getNomeProjeto())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Produto já cadastrado!"));
-        }
-
-        projetosService.save(projetos);
-        return ResponseEntity.ok().body(new MessageResponse("Produto cadastrado com sucesso!"));
-    }
-
-    // POST: Cria um projeto com foto
+    // POST: Cria um projeto com ou sem foto (campo correto: foto)
     @PostMapping("/createComFoto")
-    public ResponseEntity<?> createComFoto(
-            @RequestParam(value = "file", required = false) MultipartFile file,
-            @ModelAttribute Projetos projetos) {
+    public ResponseEntity<?> createProjeto(
+       @RequestParam("nomeProjeto") String nomeProjeto,
+       @RequestParam("descricao") String descricao,
+       @RequestParam("dataInicio") String dataInicio,
+       @RequestParam("tecnologias") String tecnologias,
+       @RequestParam("genero") String genero,
+       @RequestParam(value = "foto", required = false) MultipartFile foto) {
 
+        if (projetosService.existsByName(nomeProjeto)) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Projeto já cadastrado!"));
+        }
         try {
-            projetosService.createComFoto(file, projetos);
-            return ResponseEntity.ok().body(new MessageResponse("Produto cadastrado com sucesso!"));
+            Projetos projetoCriado = projetosService.createComFotoOuNao(
+                nomeProjeto, descricao, dataInicio, tecnologias, genero, foto
+            );
+            return ResponseEntity.ok().body(projetoCriado);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Erro ao cadastrar projeto: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new MessageResponse("Erro ao cadastrar projeto: " + e.getMessage()));
         }
     }
 
-    // POST: Salva um novo projeto com validações
+    // POST: Cria um projeto sem foto (caso precise)
+    @PostMapping("/createSemFoto")
+    public ResponseEntity<?> createSemFoto(@RequestBody Projetos projetos) {
+        if (projetosService.existsByName(projetos.getNomeProjeto())) {
+            return ResponseEntity.badRequest().body(new MessageResponse("Projeto já cadastrado!"));
+        }
+        projetosService.save(projetos);
+        return ResponseEntity.ok().body(new MessageResponse("Projeto cadastrado com sucesso!"));
+    }
+
+    // POST: Salva um novo projeto com validações (JSON puro, sem foto)
     @PostMapping
     public ResponseEntity<Object> saveProjetos(@RequestBody Projetos projetos) {
         // Validação de campos obrigatórios

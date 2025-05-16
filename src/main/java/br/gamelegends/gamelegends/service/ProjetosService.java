@@ -1,73 +1,79 @@
 package br.gamelegends.gamelegends.service;
 
 import java.util.List;
+import java.io.IOException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
-
+import jakarta.transaction.Transactional;
 import br.gamelegends.gamelegends.model.Projetos;
 import br.gamelegends.gamelegends.model.ProjetosRepository;
-import jakarta.transaction.Transactional;
 
-@Service 
+@Service
 public class ProjetosService {
 
     final ProjetosRepository projetosRepository;
 
-    public ProjetosService(ProjetosRepository _projetosRepository) {
-        this.projetosRepository = _projetosRepository;
+    public ProjetosService(ProjetosRepository projetosRepository) {
+        this.projetosRepository = projetosRepository;
     }
 
-    // Método para listar todos os projetos
-    public List<Projetos> findAll () {
+    // Lista todos os projetos
+    public List<Projetos> findAll() {
         return projetosRepository.findAll();
     }
 
-    // Método para salvar um projeto
+    // Salva um projeto (usado para criar sem imagem)
     @Transactional
     public Projetos save(Projetos projetos) {
         return projetosRepository.save(projetos);
     }
 
-    // Método para verificar se um projeto com o nome já existe
+    // Verifica se já existe projeto pelo nome
     public boolean existsByName(String nomeProjeto) {
         return projetosRepository.existsByNomeProjeto(nomeProjeto);
     }
 
-    // Método para criar um projeto sem foto (caso precise lógica extra)
-    public Projetos create(Projetos projetos) {
-        if (projetos == null) {
-            throw new IllegalArgumentException("O projeto não pode ser nulo.");
+    // Cria projeto com OU sem foto via campos separados (usado pelo controller)
+    @Transactional
+    public Projetos createComFotoOuNao(
+            String nomeProjeto,
+            String descricao,
+            String dataInicio,
+            String tecnologias,
+            String genero,
+            MultipartFile foto) throws IOException {
+
+        Projetos projeto = new Projetos();
+        projeto.setNomeProjeto(nomeProjeto);
+        projeto.setDescricao(descricao);
+        projeto.setDataInicio(dataInicio);
+        projeto.setTecnologias(tecnologias);
+        projeto.setGenero(genero);
+
+        // Salva o binário no banco (byte[]) - NÃO salva no disco!
+        if (foto != null && !foto.isEmpty()) {
+            // NUNCA chame transferTo se vai salvar no banco!
+            projeto.setFoto(foto.getBytes());
         }
-        return projetosRepository.save(projetos);
+
+        return projetosRepository.save(projeto);
     }
 
-    // Método para criar um projeto com foto
+    // (Opcional, caso queira uso antigo do padrão com ModelAttribute)
     @Transactional
-    public void createComFoto(MultipartFile file, Projetos projetos) {
-        if (projetos == null) {
+    public Projetos createComFoto(MultipartFile foto, Projetos projeto) {
+        if (projeto == null) {
             throw new IllegalArgumentException("O projeto não pode ser nulo.");
         }
-        if (file != null && !file.isEmpty()) {
-            String nomeArquivo = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
-            // Caminho absoluto para uploads/imagens-projetos na raiz do projeto
-            String pastaDestino = System.getProperty("user.dir") + File.separator + "uploads" + File.separator + "imagens-projetos" + File.separator;
-            File diretorio = new File(pastaDestino);
-            if (!diretorio.exists()) {
-                diretorio.mkdirs();
-            }
-            File destino = new File(pastaDestino + nomeArquivo);
+        if (foto != null && !foto.isEmpty()) {
+            // NUNCA chame transferTo se vai salvar no banco!
             try {
-                file.transferTo(destino);
-                // Caminho relativo para ser salvo no banco e acessado pelo frontend
-                projetos.setImagemUrl("uploads/imagens-projetos/" + nomeArquivo);
+                projeto.setFoto(foto.getBytes());
             } catch (IOException e) {
-                throw new RuntimeException("Erro ao salvar a imagem: " + e.getMessage());
+                throw new RuntimeException("Erro ao salvar a foto: " + e.getMessage());
             }
         }
-        projetosRepository.save(projetos);
+        return projetosRepository.save(projeto);
     }
 }

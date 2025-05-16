@@ -2,6 +2,9 @@ package br.gamelegends.gamelegends.model;
 
 
 import jakarta.persistence.Entity;
+
+
+import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -12,16 +15,37 @@ import jakarta.persistence.Table;
 public class Projetos {
 
 
-    @Id
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private byte[] foto; 
-	private String nomeProjeto;
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String nomeProjeto;
+
+    @Column(nullable = false, length = 500)
     private String descricao;
-    private String genero;
-    private String tecnologias;
+
+    @Column(nullable = false)
     private String dataInicio;
-    private String imagemUrl;
+
+    @Column(nullable = false)
+    private String tecnologias;
+
+    @Column(nullable = false)
+    private String genero;
+
+    @Column(nullable = true)
+    private String imagemUrl; // Caminho relativo para o arquivo salvo
+    
+    @Lob
+    @Column(name = "foto")
+    private byte[] foto;
+    
+    // Getters e Setters
+    // ...
+    
+    public byte[] getFoto() { return foto; }
+    public void setFoto(byte[] foto) { this.foto = foto; }
 
 	public String getImagemUrl() {
 		return imagemUrl;
@@ -35,11 +59,8 @@ public class Projetos {
 	public void setDataInicio(String dataInicio) {
 		this.dataInicio = dataInicio;
 	}
-	public byte[] getFoto() {
-		return foto;
-	}
-	public void setFoto(byte[] foto) {
-		this.foto = foto;
+	public void setId(Long id) {
+		this.id = id;
 	}
 	public String getNomeProjeto() {
 		return nomeProjeto;
