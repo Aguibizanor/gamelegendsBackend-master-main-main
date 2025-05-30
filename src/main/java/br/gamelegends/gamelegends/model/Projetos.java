@@ -1,13 +1,12 @@
 package br.gamelegends.gamelegends.model;
 
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-
-
-import jakarta.persistence.*;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 
 @Entity
