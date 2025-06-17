@@ -48,7 +48,7 @@ public class ProjetosController {
         if (projetoOpt.isPresent() && projetoOpt.get().getFoto() != null) {
             byte[] imagem = projetoOpt.get().getFoto();
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_JPEG); // ou IMAGE_PNG se for o caso
+            headers.setContentType(MediaType.IMAGE_JPEG); // ou MediaType.IMAGE_PNG se for o caso
             return new ResponseEntity<>(imagem, headers, HttpStatus.OK);
         } else {
             return ResponseEntity.notFound().build();
