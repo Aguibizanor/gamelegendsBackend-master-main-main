@@ -15,7 +15,20 @@ public class Avaliacao {
     private long id;
 
     private String comentario;
-    private String avalia;
+    private int estrelas; // 1 a 5 estrelas
+    private String nomeJogo;
+    private String nomeUsuario;
+    private String dataAvaliacao;
+
+    public Avaliacao() {}
+
+    public Avaliacao(String comentario, int estrelas, String nomeJogo, String nomeUsuario, String dataAvaliacao) {
+        this.comentario = comentario;
+        this.estrelas = estrelas;
+        this.nomeJogo = nomeJogo;
+        this.nomeUsuario = nomeUsuario;
+        this.dataAvaliacao = dataAvaliacao;
+    }
 
     public long getId() {
         return id;
@@ -29,10 +42,28 @@ public class Avaliacao {
     public void setComentario(String comentario) {
         this.comentario = comentario;
     }
-    public String getAvalia() {
-        return avalia;
+    public int getEstrelas() {
+        return estrelas;
     }
-    public void setAvalia(String avalia) {
-        this.avalia = avalia;
+    public void setEstrelas(int estrelas) {
+        this.estrelas = estrelas;
+    }
+    public String getNomeJogo() {
+        return nomeJogo;
+    }
+    public void setNomeJogo(String nomeJogo) {
+        this.nomeJogo = nomeJogo;
+    }
+    public String getNomeUsuario() {
+        return nomeUsuario;
+    }
+    public void setNomeUsuario(String nomeUsuario) {
+        this.nomeUsuario = nomeUsuario;
+    }
+    public String getDataAvaliacao() {
+        return dataAvaliacao;
+    }
+    public void setDataAvaliacao(String dataAvaliacao) {
+        this.dataAvaliacao = dataAvaliacao;
     }
 }

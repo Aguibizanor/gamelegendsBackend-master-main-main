@@ -32,12 +32,27 @@ public class AvaliacaoService {
     public Avaliacao update(Long id, Avaliacao novaAvaliacao) {
         return avaliacaoRepository.findById(id).map(avaliacao -> {
             avaliacao.setComentario(novaAvaliacao.getComentario());
-            avaliacao.setAvalia(novaAvaliacao.getAvalia());
+            avaliacao.setEstrelas(novaAvaliacao.getEstrelas());
+            avaliacao.setNomeJogo(novaAvaliacao.getNomeJogo());
+            avaliacao.setNomeUsuario(novaAvaliacao.getNomeUsuario());
+            avaliacao.setDataAvaliacao(novaAvaliacao.getDataAvaliacao());
             return avaliacaoRepository.save(avaliacao);
         }).orElseThrow(() -> new RuntimeException("Avaliação não encontrada"));
     }
 
     public void delete(Long id) {
         avaliacaoRepository.deleteById(id);
+    }
+    
+    public List<Avaliacao> findByNomeJogo(String nomeJogo) {
+        return avaliacaoRepository.findByNomeJogo(nomeJogo);
+    }
+    
+    public Double getMediaEstrelas(String nomeJogo) {
+        return avaliacaoRepository.findMediaEstrelasByNomeJogo(nomeJogo);
+    }
+    
+    public Long getQuantidadeAvaliacoes(String nomeJogo) {
+        return avaliacaoRepository.countByNomeJogo(nomeJogo);
     }
 }

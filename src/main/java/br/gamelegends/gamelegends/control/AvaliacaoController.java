@@ -68,4 +68,18 @@ public class AvaliacaoController {
         avaliacaoService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+    
+    // ROTA GET - Buscar avaliações por nome do jogo
+    @GetMapping("/jogo/{nomeJogo}")
+    public ResponseEntity<List<Avaliacao>> getAvaliacoesByJogo(@PathVariable String nomeJogo) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(avaliacaoService.findByNomeJogo(nomeJogo));
+    }
+    
+    // ROTA GET - Buscar média de estrelas por jogo
+    @GetMapping("/media/{nomeJogo}")
+    public ResponseEntity<Double> getMediaEstrelasByJogo(@PathVariable String nomeJogo) {
+        Double media = avaliacaoService.getMediaEstrelas(nomeJogo);
+        return ResponseEntity.status(HttpStatus.OK).body(media != null ? media : 0.0);
+    }
 }
